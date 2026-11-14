@@ -1,0 +1,90 @@
+
+@import "tailwindcss";
+
+/* SMART RX GUARD — OBSIDIAN & AMBER */
+
+@theme inline {
+  /* FONTS */
+  --font-sans: var(--font-dm-sans);
+  --font-heading: var(--font-manrope);
+
+  /* BRAND */
+  --color-primary: #F0A13B;
+  --color-primary-hover: #E38B18;
+  --color-primary-soft: #FFF0D8;
+
+  /* DARK SURFACES */
+  --color-obsidian: #1C2026;
+  --color-obsidian-soft: #292E35;
+
+  /* LIGHT SURFACES */
+  --color-page: #F7F5F1;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F1EEE8;
+
+  /* TYPOGRAPHY */
+  --color-heading: #23242B;
+  --color-body: #605F5C;
+  --color-muted: #898580;
+
+  /* BORDERS */
+  --color-line: #E6E0D7;
+
+  /* CLINICAL STATUS */
+  --color-clinical-success: #168366;
+  --color-clinical-warning: #A56813;
+  --color-clinical-danger: #C63C4C;
+  --color-clinical-info: #356DA8;
+
+  /* REUSABLE RADII */
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+}
+
+/* BASE STYLES */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-page);
+    color: var(--color-body);
+    font-family: var(--font-dm-sans), sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-heading);
+    font-family: var(--font-manrope), sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary-hover);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: #F0A13B55;
+    color: #1C2026;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
