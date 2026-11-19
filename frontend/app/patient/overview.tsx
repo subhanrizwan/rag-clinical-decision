@@ -1,18 +1,88 @@
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, ClipboardCheck, FileText, ShieldAlert, UploadCloud } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  ClipboardCheck,
+  FilePlus2,
+  FileText,
+  ShieldAlert,
+} from "lucide-react";
+import ActivityChart from "@/components/dashboard/activity-chart";
+import StatCard from "@/components/dashboard/stat-card";
 import { DemoNotice, Panel, PrimaryLink, SectionTitle, StatusPill } from "@/components/patient/primitives";
 import { prescriptions } from "@/data/patient";
 
-const counts = [
-  { label: "Prescriptions", value: prescriptions.length.toString().padStart(2, "0"), icon: FileText, color: "bg-primary-soft text-[#9B6113]" },
-  { label: "Needs review", value: prescriptions.filter(x => x.status === "Needs review").length.toString().padStart(2, "0"), icon: ShieldAlert, color: "bg-[#FBE8E9] text-[#A22A3E]" },
-  { label: "Reviewed", value: prescriptions.filter(x => x.status === "Reviewed").length.toString().padStart(2, "0"), icon: ClipboardCheck, color: "bg-[#E8F6EE] text-[#146B45]" },
+const activity = [
+  { period: "Jan", value: 18 },
+  { period: "Feb", value: 24 },
+  { period: "Mar", value: 19 },
+  { period: "Apr", value: 31 },
+  { period: "May", value: 28 },
+  { period: "Jun", value: 36 },
+  { period: "Jul", value: 27 },
+  { period: "Aug", value: 41 },
+  { period: "Sep", value: 34 },
+  { period: "Oct", value: 46 },
+  { period: "Nov", value: 39 },
+  { period: "Dec", value: 48 },
 ];
+
 export default function PatientDashboard() {
-  return <div className="space-y-7"><SectionTitle title="Good morning, Demo Patient" description="Your prescription workspace at a glance. Review records, confirm extracted details and keep track of clinical review status." action={<PrimaryLink href="/patient?section=upload">Upload prescription</PrimaryLink>} />
-    <DemoNotice />
-    <section className="relative overflow-hidden rounded-[22px] bg-obsidian p-7 text-white sm:p-9"><div className="relative z-10 max-w-xl"><p className="mb-3 text-xs font-extrabold uppercase tracking-[.16em] text-primary">Safety-focused workspace</p><h3 className="font-heading text-2xl font-extrabold leading-tight text-white sm:text-3xl">More clarity for every prescription.</h3><p className="mt-3 text-sm leading-6 text-[#BCC0C7]">Upload a prescription, check the extracted details, then examine evidence-supported findings and uncertainties.</p><Link href="/patient?section=upload" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-extrabold text-obsidian hover:bg-primary-hover"><UploadCloud size={18} />Start upload<ArrowUpRight size={17} /></Link></div><div aria-hidden="true" className="pointer-events-none absolute -right-20 -bottom-40 size-96 rounded-full border-[64px] border-primary/10" /></section>
-    <div className="grid gap-4 sm:grid-cols-3">{counts.map(item => { const Icon = item.icon; return <Panel key={item.label}><div className="flex items-start justify-between gap-3"><div><p className="text-sm text-body">{item.label}</p><p className="mt-3 font-heading text-3xl font-extrabold text-heading">{item.value}</p><p className="mt-2 text-xs text-muted">Synthetic demo records</p></div><div className={`rounded-xl p-3 ${item.color}`}><Icon size={21} /></div></div></Panel> })}</div>
-    <div className="grid gap-5 xl:grid-cols-[1.6fr_1fr]"><Panel><div className="mb-5 flex items-center justify-between"><h3 className="font-heading text-lg font-extrabold text-heading">Recent prescriptions</h3><Link className="text-sm font-bold text-[#9B6113] hover:underline" href="/patient?section=prescriptions">View all</Link></div><div className="space-y-3">{prescriptions.slice(0, 3).map(item => <Link href={`/patient?section=reports&id=${item.id}`} key={item.id} className="flex flex-col gap-3 rounded-xl border border-line p-4 transition hover:bg-page sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><div className="rounded-xl bg-surface-muted p-3 text-heading"><FileText size={20} /></div><div><p className="text-sm font-bold text-heading">{item.name}</p><p className="mt-1 text-xs text-muted">{item.id} · {item.uploaded}</p></div></div><StatusPill type={item.status} /></Link>)}</div></Panel><Panel><h3 className="font-heading text-lg font-extrabold text-heading">Quick access</h3><p className="mt-2 text-sm text-body">Jump back into your workspace.</p><div className="mt-5 space-y-2">{[{ href: "/patient?section=reports", name: "Review safety reports", icon: ShieldAlert }, { href: "/patient?section=schedule", name: "Medication schedule", icon: CalendarDays }, { href: "/patient?section=history", name: "Prescription history", icon: FileText }].map(v => { const Icon = v.icon; return <Link href={v.href} key={v.href} className="flex items-center justify-between rounded-xl border border-line p-3.5 text-sm font-semibold text-heading hover:bg-page"><span className="flex items-center gap-3"><Icon size={18} className="text-[#9B6113]" />{v.name}</span><ArrowUpRight size={16} /></Link> })}</div></Panel></div>
-  </div>;
+  const needsReview = prescriptions.filter((item) => item.status === "Needs review").length;
+  const reviewed = prescriptions.filter((item) => item.status === "Reviewed").length;
+
+  return (
+    <div className="dashboard-page">
+      <SectionTitle
+        title="Good morning, Demo Patient"
+        description="Review your records and see where each one is in the demonstration workflow."
+        action={<PrimaryLink href="/patient?section=upload"><FilePlus2 size={16} /> Upload prescription</PrimaryLink>}
+      />
+      <DemoNotice />
+      <section className="dashboard-stat-grid">
+        <StatCard label="Prescriptions" value={prescriptions.length.toString().padStart(2, "0")} detail="Synthetic records" icon={FileText} />
+        <StatCard label="Needs review" value={needsReview.toString().padStart(2, "0")} detail="Not a clinical risk score" icon={ShieldAlert} tone="warning" />
+        <StatCard label="Reviewed" value={reviewed.toString().padStart(2, "0")} detail="Demo review status" icon={ClipboardCheck} tone="success" />
+      </section>
+
+      <div className="dashboard-overview-grid">
+        <div className="dashboard-overview-main">
+          <ActivityChart title="Prescription activity" data={activity} metricLabel="Records" />
+          <Panel className="app-panel">
+            <div className="dashboard-panel-heading">
+              <div><h2>Recent prescriptions</h2><p>Latest synthetic records in this workspace</p></div>
+              <Link href="/patient?section=prescriptions" className="dashboard-text-link">View all <ArrowRight size={14} /></Link>
+            </div>
+            <div className="dashboard-record-list">
+              {prescriptions.slice(0, 4).map((item) => (
+                <Link href={`/patient?section=reports&id=${item.id}`} key={item.id} className="dashboard-record">
+                  <span className="dashboard-record-icon"><FileText size={17} /></span>
+                  <span className="dashboard-record-copy">
+                    <strong>{item.name}</strong>
+                    <small>{item.id} · Uploaded {item.uploaded}</small>
+                  </span>
+                  <StatusPill type={item.status} />
+                </Link>
+              ))}
+            </div>
+          </Panel>
+        </div>
+
+        <Panel className="app-panel dashboard-side-panel">
+          <div className="dashboard-panel-heading">
+            <div><h2>Workspace shortcuts</h2><p>Continue where you left off</p></div>
+          </div>
+          <div className="dashboard-shortcuts">
+            <Link href="/patient?section=reports"><ShieldAlert size={17} /><span><strong>Safety reports</strong><small>Check evidence and review context</small></span><ArrowRight size={15} /></Link>
+            <Link href="/patient?section=schedule"><CalendarDays size={17} /><span><strong>Medication schedule</strong><small>View the synthetic schedule demo</small></span><ArrowRight size={15} /></Link>
+            <Link href="/patient?section=history"><ClipboardCheck size={17} /><span><strong>Prescription history</strong><small>Browse sample activity events</small></span><ArrowRight size={15} /></Link>
+          </div>
+          <div className="dashboard-safety-note">
+            <ShieldAlert size={16} />
+            <p>Missing or inconclusive evidence is unknown—not proof that a prescription is safe.</p>
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
 }

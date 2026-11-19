@@ -1,4 +1,7 @@
 import type { ReactNode } from "react";
-import AdminShell from "./admin-shell";
-export default function AdminLayout({ children }: { children: ReactNode }) { return <AdminShell>{children}</AdminShell> }
+import ProtectedDashboard from "../../components/protected-dashboard";
+
+export default function AdminLayout({ children }: { children: ReactNode }) {
+  return <ProtectedDashboard role="admin">{children}</ProtectedDashboard>;
+}
 

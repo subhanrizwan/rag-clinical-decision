@@ -1,6 +1,7 @@
 
 import type { Metadata } from "next";
 import { Manrope, DM_Sans } from "next/font/google";
+import { ThemeProvider } from "../components/theme-provider";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -16,7 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Rx Guard | Prescription Safety",
+  title: "RAG Clinical Decision Support",
   description:
     "Evidence-supported clinical decision support and prescription safety platform.",
 };
@@ -27,12 +28,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <body
         suppressHydrationWarning
         className={`${manrope.variable} ${dmSans.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

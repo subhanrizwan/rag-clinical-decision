@@ -1,15 +1,95 @@
 import Link from "next/link";
-import { Activity, ArrowRight, BookOpenText, Clock3, FileText, ShieldAlert, Users, UserRoundCheck } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  BookOpenText,
+  Clock3,
+  FileText,
+  ShieldAlert,
+  Users,
+} from "lucide-react";
+import ActivityChart from "@/components/dashboard/activity-chart";
+import StatCard from "@/components/dashboard/stat-card";
 import { DemoNotice, Heading, Panel, Pill } from "./admin-ui";
 import { initialEvents, initialSources, initialUsers } from "./data";
-const samples=[{day:"Mon",value:32},{day:"Tue",value:54},{day:"Wed",value:43},{day:"Thu",value:69},{day:"Fri",value:58},{day:"Sat",value:83},{day:"Sun",value:62}];
-export default function Overview(){
- const cards=[{name:"Demo users",value:initialUsers.length.toString().padStart(2,"0"),detail:"Patient, Doctor & Admin",icon:Users,accent:"#B87619"},{name:"Prescription samples",value:"74",detail:"Illustrative records",icon:FileText,accent:"#366EA5"},{name:"Review queue",value:"12",detail:"Illustrative pending",icon:Clock3,accent:"#B87619"},{name:"Knowledge sources",value:initialSources.length.toString().padStart(2,"0"),detail:"Example RAG sources",icon:BookOpenText,accent:"#168366"}];
- return <div><Heading eyebrow="Administration / Overview" title="Platform at a glance" description="A demonstration overview of users, clinical-review workflows and AI knowledge sources. All metrics below are fictional." />
- <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(({name,value,detail,icon:Icon,accent})=><Panel key={name}><div className="mb-4 flex items-start justify-between gap-2"><p className="text-sm font-semibold text-[#77716B]">{name}</p><span className="grid size-10 place-items-center rounded-xl bg-[#F7F5F1]" style={{color:accent}}><Icon size={20}/></span></div><p className="font-heading text-3xl font-extrabold tracking-tight text-[#1C2026]">{value}</p><p className="mt-2 text-xs text-[#969089]">{detail}</p></Panel>)}</section>
- <div className="mb-6 grid gap-6 xl:grid-cols-5"><Panel className="xl:col-span-3"><div className="mb-7 flex items-start justify-between gap-2"><div><h3 className="font-heading text-lg font-bold text-[#1C2026]">Sample weekly activity</h3><p className="mt-1 text-xs text-[#88817A]">Static UI chart — not live events</p></div><Activity size={20} className="text-[#B87619]"/></div><div className="flex h-52 items-end gap-3 border-b border-[#E6E0D7] pb-1 sm:gap-5">{samples.map(item=><div key={item.day} className="flex h-full flex-1 flex-col items-center justify-end gap-2"><span className="text-xs font-bold text-[#5C544A]">{item.value}</span><div className="w-full max-w-14 rounded-t-lg bg-[#F0A13B] transition-colors hover:bg-[#D68A29]" style={{height:`${item.value}%`}}/></div>)}</div><div className="mt-3 flex gap-3 sm:gap-5">{samples.map(item=><span key={item.day} className="flex-1 text-center text-[11px] text-[#88817A]">{item.day}</span>)}</div></Panel>
- <Panel className="xl:col-span-2"><h3 className="font-heading text-lg font-bold text-[#1C2026]">Development modules</h3><p className="mt-1 text-xs text-[#88817A]">What is and is not implemented</p><div className="mt-6 space-y-4">{[{name:"Admin frontend",status:"UI prototype",icon:UserRoundCheck},{name:"Role permissions",status:"Not integrated",icon:ShieldAlert},{name:"Database",status:"Not integrated",icon:FileText},{name:"OCR processing",status:"Not integrated",icon:FileText},{name:"RAG retrieval",status:"Not integrated",icon:BookOpenText}].map(x=><div key={x.name} className="flex items-center justify-between gap-3 border-b border-[#EFEAE3] pb-3 last:border-0"><span className="text-sm font-semibold text-[#34363A]">{x.name}</span><span className="text-right text-xs text-[#77716B]">{x.status}</span></div>)}</div></Panel></div>
- <div className="grid gap-6 xl:grid-cols-5"><Panel className="xl:col-span-3"><div className="mb-6 flex items-center justify-between gap-2"><h3 className="font-heading text-lg font-bold text-[#1C2026]">Recent sample activity</h3><Link href="/admin/audit-logs" className="inline-flex items-center gap-1 text-xs font-bold text-[#966018]">View all <ArrowRight size={14}/></Link></div><div className="space-y-4">{initialEvents.slice(0,4).map(e=><div key={e.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-[#F0ECE6] pb-4 last:border-0 last:pb-0"><div><p className="text-sm font-semibold text-[#33363B]">{e.action}</p><p className="mt-1 text-xs text-[#8E867E]">{e.actor} · {e.target}</p></div><Pill status={e.level}/></div>)}</div></Panel>
- <Panel className="xl:col-span-2"><h3 className="font-heading text-lg font-bold text-[#1C2026]">Quick access</h3><p className="mb-5 mt-1 text-xs text-[#8E867E]">Jump to administration tools</p><div className="space-y-3">{[{href:"/admin/users",label:"Manage demo users",icon:Users},{href:"/admin/knowledge-base",label:"View knowledge sources",icon:BookOpenText},{href:"/admin/audit-logs",label:"Explore sample audit logs",icon:Activity}].map(({href,label,icon:Icon})=><Link key={href} href={href} className="flex items-center justify-between rounded-xl border border-[#E6E0D7] px-4 py-3 text-sm font-semibold text-[#31343B] transition-colors hover:border-[#E1B066] hover:bg-[#FFF8EA]"><span className="flex items-center gap-2"><Icon size={17} className="text-[#B87619]"/>{label}</span><ArrowRight size={16}/></Link>)}</div></Panel></div>
- <DemoNotice/></div>
+
+const activity = [
+  { period: "Jan", value: 22 },
+  { period: "Feb", value: 30 },
+  { period: "Mar", value: 26 },
+  { period: "Apr", value: 43 },
+  { period: "May", value: 39 },
+  { period: "Jun", value: 52 },
+  { period: "Jul", value: 44 },
+  { period: "Aug", value: 59 },
+  { period: "Sep", value: 54 },
+  { period: "Oct", value: 68 },
+  { period: "Nov", value: 61 },
+  { period: "Dec", value: 76 },
+];
+
+export default function Overview() {
+  const pendingEvents = initialEvents.filter((event) => event.level === "Warning").length;
+
+  return (
+    <div className="dashboard-page">
+      <Heading
+        eyebrow="ADMINISTRATION / OVERVIEW"
+        title="Platform overview"
+        description="A high-level view of the synthetic users, records, and reference sources in this prototype."
+      />
+      <DemoNotice />
+      <section className="dashboard-stat-grid dashboard-stat-grid-four">
+        <StatCard label="Demo users" value={initialUsers.length.toString().padStart(2, "0")} detail="All roles" icon={Users} />
+        <StatCard label="Prescription samples" value="74" detail="Illustrative records" icon={FileText} tone="info" />
+        <StatCard label="Review queue" value="12" detail="Illustrative pending" icon={Clock3} tone="warning" />
+        <StatCard label="Knowledge sources" value={initialSources.length.toString().padStart(2, "0")} detail="Example RAG sources" icon={BookOpenText} tone="success" />
+      </section>
+
+      <div className="dashboard-overview-grid">
+        <div className="dashboard-overview-main">
+          <ActivityChart title="Platform activity" data={activity} metricLabel="Events" />
+          <Panel className="app-panel">
+            <div className="dashboard-panel-heading">
+              <div><h2>Recent sample activity</h2><p>Fictional events for the UI demonstration</p></div>
+              <Link href="/admin/audit-logs" className="dashboard-text-link">View logs <ArrowRight size={14} /></Link>
+            </div>
+            <div className="dashboard-record-list">
+              {initialEvents.slice(0, 4).map((event) => (
+                <div key={event.id} className="dashboard-record">
+                  <span className="dashboard-record-icon"><Activity size={17} /></span>
+                  <span className="dashboard-record-copy">
+                    <strong>{event.action}</strong>
+                    <small>{event.actor} · {event.target}</small>
+                  </span>
+                  <Pill status={event.level} />
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+
+        <Panel className="app-panel dashboard-side-panel">
+          <div className="dashboard-panel-heading">
+            <div><h2>Workspace status</h2><p>Frontend integration boundaries</p></div>
+          </div>
+          <div className="dashboard-module-list">
+            {[
+              { label: "Admin interface", value: "Demo" },
+              { label: "Role permissions", value: "Not connected" },
+              { label: "OCR & RAG services", value: "Not connected" },
+              { label: "Sample warnings", value: `${pendingEvents}` },
+            ].map((item) => (
+              <div key={item.label}><span>{item.label}</span><strong>{item.value}</strong></div>
+            ))}
+          </div>
+          <div className="dashboard-shortcuts">
+            <Link href="/admin/users"><Users size={16} /><span><strong>Manage demo users</strong><small>Browse sample roles</small></span><ArrowRight size={15} /></Link>
+            <Link href="/admin/knowledge-base"><BookOpenText size={16} /><span><strong>Knowledge sources</strong><small>View example references</small></span><ArrowRight size={15} /></Link>
+          </div>
+          <div className="dashboard-safety-note"><ShieldAlert size={16} /><p>All data and activity shown here are synthetic.</p></div>
+        </Panel>
+      </div>
+    </div>
+  );
 }

@@ -1,6 +1,7 @@
-import DashboardShell from "../../components/dashboard-shell";
+import ProtectedDashboard from "../../components/protected-dashboard";
 import type { ReactNode } from "react";
+
 export default function DoctorLayout({ children }: { children: ReactNode }) {
-  return <DashboardShell>{children}</DashboardShell>;
+  return <ProtectedDashboard role="doctor">{children}</ProtectedDashboard>;
 }
   

@@ -1,27 +1,96 @@
 "use client";
+
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, Clock3, FileCheck2, ListChecks, ShieldAlert, Stethoscope } from "lucide-react";
+import {
+  ArrowRight,
+  ClipboardCheck,
+  Clock3,
+  FileCheck2,
+  ShieldAlert,
+} from "lucide-react";
+import ActivityChart from "@/components/dashboard/activity-chart";
+import StatCard from "@/components/dashboard/stat-card";
 import { useDoctorReviews } from "@/components/doctor/use-doctor-reviews";
-import { Panel, PageHeading, DemoBanner, Status } from "@/components/doctor/doctor-ui";
+import { DemoBanner, Panel, Status } from "@/components/doctor/doctor-ui";
+
+const activity = [
+  { period: "Jan", value: 12 },
+  { period: "Feb", value: 17 },
+  { period: "Mar", value: 14 },
+  { period: "Apr", value: 20 },
+  { period: "May", value: 24 },
+  { period: "Jun", value: 18 },
+  { period: "Jul", value: 27 },
+  { period: "Aug", value: 23 },
+  { period: "Sep", value: 31 },
+  { period: "Oct", value: 26 },
+  { period: "Nov", value: 35 },
+  { period: "Dec", value: 30 },
+];
 
 export default function Overview() {
   const { reviews } = useDoctorReviews();
-  const pending = reviews.filter(r=>r.status==="Pending").length;
-  const clarified = reviews.filter(r=>r.status==="Needs clarification").length;
-  const reviewed = reviews.filter(r=>r.status==="Reviewed").length;
-  const stats = [
-    {label:"Assigned Records",value:reviews.length,icon:ClipboardCheck,color:"bg-primary-soft text-[#9A6219]"},
-    {label:"Pending Review",value:pending,icon:Clock3,color:"bg-[#FFF4DF] text-[#9A6219]"},
-    {label:"Needs Clarification",value:clarified,icon:ShieldAlert,color:"bg-[#FFF0F1] text-[#A3333E]"},
-    {label:"Reviewed",value:reviewed,icon:FileCheck2,color:"bg-[#E7F8F0] text-[#156A4C]"},
-  ];
-  return <>
-    <PageHeading eyebrow="Clinical workspace" title="Good morning, Doctor" description="Track assigned prescription reviews, review extracted records, and record demo verification decisions." action={<Link href="/doctor?view=reviews" className="inline-flex items-center justify-center gap-2 rounded-control bg-primary px-5 py-3 text-sm font-bold text-obsidian hover:bg-primary-hover">Open Review Queue <ArrowRight size={17}/></Link>}/>
-    <DemoBanner/>
-    <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">{stats.map((stat)=>{const Icon=stat.icon;return <Panel key={stat.label} className="flex items-start justify-between"><div><p className="text-sm text-body">{stat.label}</p><p className="mt-3 font-heading text-3xl font-extrabold text-heading">{stat.value.toString().padStart(2,"0")}</p></div><span className={`rounded-xl p-3 ${stat.color}`}><Icon size={22}/></span></Panel>})}</div>
-    <div className="grid gap-6 xl:grid-cols-[1.55fr_1fr]">
-      <Panel><div className="mb-5 flex items-center justify-between gap-2"><h3 className="font-heading text-lg font-bold text-heading">Recent assignments</h3><Link href="/doctor?view=reviews" className="text-sm font-bold text-[#9A6219] hover:underline">View all</Link></div><div className="space-y-3">{reviews.slice(0,3).map((r)=><div key={r.id} className="flex flex-col gap-3 rounded-xl border border-line p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold text-heading">{r.patient} <span className="font-normal text-muted">· {r.id}</span></p><p className="mt-1 text-xs text-muted">{r.date} · {r.medicines.length} extracted item(s)</p></div><div className="flex items-center gap-3"><Status value={r.status}/><Link href={`/doctor?view=verify&id=${r.id}`} className="rounded-lg border border-line p-2 text-heading hover:bg-primary-soft" aria-label={`Open ${r.id}`}><ArrowRight size={17}/></Link></div></div>)}</div></Panel>
-      <Panel className="bg-obsidian text-white"><span className="inline-flex rounded-xl bg-white/10 p-3 text-primary"><Stethoscope size={24}/></span><h3 className="mt-5 font-heading text-xl font-bold text-white">Review workflow</h3><p className="mt-3 text-sm leading-6 text-white/65">Inspect the source prescription, confirm extracted text, examine evidence placeholders, and document uncertainty before taking action.</p><Link href="/doctor?view=verify" className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-obsidian">Start verification <ArrowRight size={16}/></Link><div className="mt-6 flex items-center gap-2 text-xs text-white/45"><ListChecks size={16}/> Synthetic records only</div></Panel>
+  const pending = reviews.filter((review) => review.status === "Pending").length;
+  const clarification = reviews.filter((review) => review.status === "Needs clarification").length;
+  const reviewed = reviews.filter((review) => review.status === "Reviewed").length;
+
+  return (
+    <div className="dashboard-page">
+      <div className="dashboard-page-heading">
+        <div>
+          <span className="dashboard-kicker">CLINICAL WORKSPACE</span>
+          <h2>Good morning, Doctor</h2>
+          <p>Review assigned synthetic records and document demo verification decisions.</p>
+        </div>
+        <Link href="/doctor?view=reviews" className="dashboard-primary-link">Open review queue <ArrowRight size={16} /></Link>
+      </div>
+      <DemoBanner />
+      <section className="dashboard-stat-grid dashboard-stat-grid-four">
+        <StatCard label="Assigned records" value={reviews.length.toString().padStart(2, "0")} detail="Synthetic records" icon={ClipboardCheck} />
+        <StatCard label="Pending review" value={pending.toString().padStart(2, "0")} detail="Awaiting demo review" icon={Clock3} tone="warning" />
+        <StatCard label="Needs clarification" value={clarification.toString().padStart(2, "0")} detail="Follow-up requested" icon={ShieldAlert} tone="info" />
+        <StatCard label="Reviewed" value={reviewed.toString().padStart(2, "0")} detail="Demo decisions" icon={FileCheck2} tone="success" />
+      </section>
+
+      <div className="dashboard-overview-grid">
+        <div className="dashboard-overview-main">
+          <ActivityChart title="Review activity" data={activity} metricLabel="Reviews" />
+          <Panel className="app-panel">
+            <div className="dashboard-panel-heading">
+              <div><h2>Recent assignments</h2><p>Records currently in the review queue</p></div>
+              <Link href="/doctor?view=reviews" className="dashboard-text-link">View queue <ArrowRight size={14} /></Link>
+            </div>
+            <div className="dashboard-record-list">
+              {reviews.slice(0, 4).map((review) => (
+                <div key={review.id} className="dashboard-record">
+                  <span className="dashboard-record-icon"><ClipboardCheck size={17} /></span>
+                  <span className="dashboard-record-copy">
+                    <strong>{review.patient} <small>· {review.id}</small></strong>
+                    <small>{review.date} · {review.medicines.length} extracted item(s)</small>
+                  </span>
+                  <Status value={review.status} />
+                  <Link href={`/doctor?view=verify&id=${review.id}`} className="dashboard-icon-link" aria-label={`Review ${review.id}`}><ArrowRight size={15} /></Link>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+
+        <Panel className="app-panel dashboard-side-panel">
+          <div className="dashboard-panel-heading">
+            <div><h2>Review principles</h2><p>Keep source and uncertainty in view</p></div>
+          </div>
+          <ul className="dashboard-principles">
+            <li><span>01</span><p>Confirm extracted fields against the original source.</p></li>
+            <li><span>02</span><p>Do not infer missing dose or instruction details.</p></li>
+            <li><span>03</span><p>Insufficient evidence does not establish safety.</p></li>
+          </ul>
+          <div className="dashboard-safety-note">
+            <ShieldAlert size={16} />
+            <p>This prototype does not perform clinical analysis or verification.</p>
+          </div>
+        </Panel>
+      </div>
     </div>
-  </>;
+  );
 }

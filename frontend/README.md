@@ -16,6 +16,18 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Authentication
+
+Configure `MONGODB_URI` and `JWT_SECRET` in `backend/.env`, then start the backend.
+The frontend proxies sign-in and registration requests to `http://127.0.0.1:5000`
+by default. Set `AUTH_API_URL` in `frontend/.env.local` if the backend runs at a
+different URL. Dashboard routes verify the session with the backend and require
+an account matching that workspace role.
+In development, the shared dashboard-preview credentials are
+`demo@rag-clinical.test` / `DemoAccess123!`; select Patient, Doctor, or Admin
+on the sign-in page. Demo login is enabled only by `npm run dev` on the backend
+and is disabled by the production start command.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

@@ -60,8 +60,7 @@ export function Card({
   return (
     <div
       className={`
-        rounded-card border border-line bg-surface p-5
-        shadow-[0_4px_18px_rgba(28,32,38,0.025)]
+        app-panel rounded-card border border-line bg-surface p-5
         sm:p-6 ${className}
       `}
       {...props}
